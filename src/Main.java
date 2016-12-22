@@ -9,14 +9,18 @@ public class Main {
 		
 		DirectedNode dirNode1 = new DirectedNode(9);
 		DirectedNode dirNode2 = new DirectedNode(5);
-		DirectedNode dirNode3 = new DirectedNode(3);
-		DirectedNode dirNode4 = new DirectedNode(6);
-		DirectedNode dirNode5 = new DirectedNode(1);
+		DirectedNode dirNode3 = new DirectedNode(15);
+		DirectedNode dirNode4 = new DirectedNode(23);
+		DirectedNode dirNode5 = new DirectedNode(15);
 		
 		BinarySearchTree bst = new BinarySearchTree(dirNode1);
 		bst.addNode(dirNode2);
+		bst.addNode(dirNode5);
+		bst.addNode(dirNode4);
+		bst.addNode(dirNode3);
 		System.out.println(bst.toString());
-		
+		System.out.println(bst.getNumChildren());
+		System.out.println((bst.getNumChildren(bst.getRightNode(bst.getRoot()))));
 
 	}
 
@@ -86,23 +90,23 @@ class BinarySearchTree
 	}
 	
 	/**
-	 * set the right node of a base
+	 * set the right node of a head
 	 * @param nodeToAdd node to add
-	 * @param base node to add to
+	 * @param head node to add to
 	 */
-	public void setRightNode(DirectedNode base, DirectedNode nodeToAdd)
+	public void setRightNode(DirectedNode head, DirectedNode nodeToAdd)
 	{
-		base.connect(nodeToAdd, 1);
+		head.connect(nodeToAdd, 1);
 	}
 	
 	/**
-	 * set the left node of a base
+	 * set the left node of a head
 	 * @param nodeToAdd node to add
-	 * @param base node to add to
+	 * @param head node to add to
 	 */
-	public void setLeftNode(DirectedNode base, DirectedNode nodeToAdd)
+	public void setLeftNode(DirectedNode head, DirectedNode nodeToAdd)
 	{
-		base.connect(nodeToAdd, 0);
+		head.connect(nodeToAdd, 0);
 	}
 	
 	/**
@@ -121,6 +125,35 @@ class BinarySearchTree
 				return null;
 			}
 	}
+	
+	/**
+	 * helper method to call getNumChildren with root of tree
+	 * @return
+	 */
+	public int getNumChildren()
+	{
+		return getNumChildren(this.getRoot());
+	}
+	
+	/**
+	 * returns the number of children of a target node
+	 * @param target target node
+	 * @return number of children (left, right)
+	 */
+	public int getNumChildren(DirectedNode target)
+	{
+		if (getRightNode(target) == null && getLeftNode(target) == null)
+		{
+			return 0;
+		} else if (getRightNode(target) == null) {
+			return 1 + getNumChildren(getLeftNode(target));
+		} else if (getLeftNode(target) == null) {
+			return 1 + getNumChildren(getRightNode(target));
+		} else {
+			//in this case, node has two children
+			return 2 + getNumChildren(getLeftNode(target)) + getNumChildren(getRightNode(target));
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -138,6 +171,34 @@ class BinarySearchTree
 		return level;
 	}
 	
+	//TODO: write contains/search method - BFS vs DFS
+	
+	/**
+	 * helper method to call deleteNode with root as param
+	 * @param nodeToRemove the node to remove 
+	 */
+	public void deleteNode(DirectedNode nodeToRemove)
+	{
+		deleteNode(root, nodeToRemove);
+	}
+	
+	/**
+	 * full method to find and remove a node
+	 * @param head the root of the tree to search, aka where the function is currently looking
+	 * @param nodeToRemove target node to remove
+	 */
+	public void deleteNode(DirectedNode head, DirectedNode nodeToRemove)
+	{
+				
+		//check if the node to remove is the head
+		if (head.compare(nodeToRemove) == 0)
+		{
+			//TODO: logic for node deletion here
+		} else {
+			//TODO: continue searching for node, or alert user if node has no children and is not the target
+		}
+	}
+	
 	/**
 	 * helper method to call the full addNode method with root as param
 	 * @param nodeToAdd
@@ -149,32 +210,32 @@ class BinarySearchTree
 	
 	/**
 	 * add a node to the binary search tree object
-	 * @param base node to add to - should be ROOT node if calling this method
+	 * @param head node to add to - should be ROOT node if calling this method
 	 * @param nodeToAdd the node to add
 	 */
-	public void addNode(DirectedNode base, DirectedNode nodeToAdd)
+	public void addNode(DirectedNode head, DirectedNode nodeToAdd)
 	{
-		if (base.compare(nodeToAdd) == -1)
+		if (head.compare(nodeToAdd) == -1)
 		{
-			if (getRightNode(base) == null)
+			if (getRightNode(head) == null)
 				{
 					totalNodes++;
-					setRightNode(base, nodeToAdd);
+					setRightNode(head, nodeToAdd);
 				} else {
-					addNode(getRightNode(base), nodeToAdd);
+					addNode(getRightNode(head), nodeToAdd);
 				}
-		} else if (base.compare(nodeToAdd) == 1)
+		} else if (head.compare(nodeToAdd) == 1)
 		{
-			if (getLeftNode(base) == null)
+			if (getLeftNode(head) == null)
 				{
 					totalNodes++;
-					setLeftNode(base, nodeToAdd);
+					setLeftNode(head, nodeToAdd);
 				} else {
-					addNode(getLeftNode(base), nodeToAdd);
+					addNode(getLeftNode(head), nodeToAdd);
 				}
 		} else {
 			//if compare == 0, node is already in tree. silently ignore or print to console
-			System.out.println("Node " + nodeToAdd + " already in tree. skipping");
+			System.out.println("Node with data " + nodeToAdd.getData() + " already in tree. skipping");
 			
 		}
 	}
