@@ -3,6 +3,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.mxgraph.model.mxGraphModel;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -55,6 +57,16 @@ class BinarySearchTree
 		root = rootNode;
 		level = 1;
 		totalNodes = 1;
+	}
+	
+	/**
+	 * get the level of the tree
+	 * @return the level - how deep is the tree (node = level 1)
+	 */
+	public int getLevel(DirectedNode target)
+	{
+		//TODO: implement getLevel
+		return 0;
 	}
 	
 	/**
@@ -171,7 +183,16 @@ class BinarySearchTree
 		return level;
 	}
 	
-	//TODO: write contains/search method - BFS vs DFS
+	//TODO: write contains/search method - BFS vs DFS?
+	
+	//TODO: finish and optimize pretty print method
+	
+	public void prettyPrint()
+	{
+		DirectedNode currentRoot = getRoot();
+		
+		
+	}
 	
 	/**
 	 * helper method to call deleteNode with root as param
