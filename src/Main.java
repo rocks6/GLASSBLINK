@@ -8,21 +8,31 @@ import com.mxgraph.model.mxGraphModel;
 public class Main {
 
 	public static void main(String[] args) {
+
 		
-		DirectedNode dirNode1 = new DirectedNode(9);
-		DirectedNode dirNode2 = new DirectedNode(5);
-		DirectedNode dirNode3 = new DirectedNode(15);
-		DirectedNode dirNode4 = new DirectedNode(23);
-		DirectedNode dirNode5 = new DirectedNode(15);
+		BinaryTreeNode dirNode1 = new BinaryTreeNode(9);
+		BinaryTreeNode dirNode2 = new BinaryTreeNode(5);
+		BinaryTreeNode dirNode3 = new BinaryTreeNode(18);
+		BinaryTreeNode dirNode4 = new BinaryTreeNode(23);
+		BinaryTreeNode dirNode5 = new BinaryTreeNode(15);
+		
+		List<BinaryTreeNode> nodes = new ArrayList<BinaryTreeNode>();
+		nodes.add(dirNode1); nodes.add(dirNode2); nodes.add(dirNode3); nodes.add(dirNode4); nodes.add(dirNode5);
 		
 		BinarySearchTree bst = new BinarySearchTree(dirNode1);
 		bst.addNode(dirNode2);
-		bst.addNode(dirNode5);
-		bst.addNode(dirNode4);
 		bst.addNode(dirNode3);
-		System.out.println(bst.toString());
+		bst.addNode(dirNode4);
+		bst.addNode(dirNode5);
+		System.out.println(bst.simpleToString());
+		System.out.println("Children: " + bst.getNumChildren());
+		System.out.println("Level: " + bst.getLevel());
+		/*
+		
+
 		System.out.println(bst.getNumChildren());
-		System.out.println((bst.getNumChildren(bst.getRightNode(bst.getRoot()))));
+		System.out.println((bst.getNumChildren(bst.getRoot().right)));
+		*/
 
 	}
 
@@ -35,8 +45,7 @@ public class Main {
  */
 class BinarySearchTree
 {
-	private DirectedNode root;
-	private int level;
+	private BinaryTreeNode root;
 	private int totalNodes;
 
 	/**
@@ -44,55 +53,79 @@ class BinarySearchTree
 	 */
 	public BinarySearchTree()
 	{
-		root = new DirectedNode();
-		level = 1;
+		root = new BinaryTreeNode(0);
 		totalNodes = 1;
 	}
 	
 	/**
 	 * default constructor for BST object initializing root with data
 	 */
-	public BinarySearchTree(DirectedNode rootNode)
+	public BinarySearchTree(BinaryTreeNode rootNode)
 	{
 		root = rootNode;
-		level = 1;
 		totalNodes = 1;
+	}
+	
+	/**
+	 * helper method with no params to call getLevel with root node
+	 * @return the level of the current tree
+	 */
+	public int getLevel()
+	{
+		return getLevel(root);
 	}
 	
 	/**
 	 * get the level of the tree
 	 * @return the level - how deep is the tree (node = level 1)
 	 */
-	public int getLevel(DirectedNode target)
+	public int getLevel(BinaryTreeNode target)
 	{
-		//TODO: implement getLevel
-		return 0;
+		
+		//root node is index 1
+		int leftLevel = 1;
+		int rightLevel = 1;
+		
+		if (target == null)
+			{
+				return 0;
+			}
+		if (target.left != null)
+			{
+				leftLevel = 1 + getLevel(target.left);
+			}
+		if (target.right != null)
+			{
+				rightLevel = 1 + getLevel(target.right);
+			}
+		
+		return Math.max(leftLevel, rightLevel);
 	}
 	
 	/**
 	 * @return the root node
 	 */
-	public DirectedNode getRoot() {
+	public BinaryTreeNode getRoot() {
 		return root;
 	}
 
 	/**
 	 * @param root the root to set
 	 */
-	public void setRoot(DirectedNode root) {
+	public void setRoot(BinaryTreeNode root) {
 		this.root = root;
 	}
 	
 	/**
-	 * get the node on the right, aka the one in the second index
+	 * get the node's right child
 	 * @param target the target node to access 
 	 * @return accessed node
 	 */
-	public DirectedNode getRightNode(DirectedNode target)
+	public BinaryTreeNode getRightNode(BinaryTreeNode target)
 	{
 		try
 			{
-				return target.getConnectedTo().get(1);
+				return target.right;
 			} catch (Exception e)
 			{
 				//right node does not exist
@@ -102,37 +135,38 @@ class BinarySearchTree
 	}
 	
 	/**
-	 * set the right node of a head
+	 * set the right child of a node
 	 * @param nodeToAdd node to add
 	 * @param head node to add to
 	 */
-	public void setRightNode(DirectedNode head, DirectedNode nodeToAdd)
+	public void setRightNode(BinaryTreeNode head, BinaryTreeNode nodeToAdd)
 	{
-		head.connect(nodeToAdd, 1);
+		head.right = nodeToAdd;
 	}
 	
 	/**
-	 * set the left node of a head
+	 * set the left child of a head
 	 * @param nodeToAdd node to add
 	 * @param head node to add to
 	 */
-	public void setLeftNode(DirectedNode head, DirectedNode nodeToAdd)
+	public void setLeftNode(BinaryTreeNode head, BinaryTreeNode nodeToAdd)
 	{
-		head.connect(nodeToAdd, 0);
+		head.left = nodeToAdd;
 	}
 	
 	/**
-	 * get the node on the right, aka the one in the second index
+	 * get the node's left child
 	 * @param target the target node to access 
 	 * @return accessed node
 	 */
-	public DirectedNode getLeftNode(DirectedNode target)
+	public BinaryTreeNode getLeftNode(BinaryTreeNode target)
 	{
 		try
 			{
-				return target.getConnectedTo().get(0);
+				return target.left;
 			} catch (Exception e)
 			{
+				//TODO: create special 'null node' / node does not exist exception?
 				//left node does not exist
 				return null;
 			}
@@ -152,19 +186,22 @@ class BinarySearchTree
 	 * @param target target node
 	 * @return number of children (left, right)
 	 */
-	public int getNumChildren(DirectedNode target)
+	public int getNumChildren(BinaryTreeNode target)
 	{
-		if (getRightNode(target) == null && getLeftNode(target) == null)
-		{
-			return 0;
-		} else if (getRightNode(target) == null) {
-			return 1 + getNumChildren(getLeftNode(target));
-		} else if (getLeftNode(target) == null) {
-			return 1 + getNumChildren(getRightNode(target));
-		} else {
-			//in this case, node has two children
-			return 2 + getNumChildren(getLeftNode(target)) + getNumChildren(getRightNode(target));
-		}
+		int leftNodes = 0;
+		int rightNodes = 0;
+		
+		if (target.left != null)
+			{
+				leftNodes = getNumChildren(target.left) + 1;
+			}
+		if (target.right != null)
+			{
+				rightNodes = getNumChildren(target.right) + 1;
+			}
+		
+		return leftNodes + rightNodes;
+		
 	}
 
 	/* (non-Javadoc)
@@ -177,28 +214,22 @@ class BinarySearchTree
 	}
 	
 	/**
-	 * @return the level
+	 * simple toString method with only data for easier viewing
+	 * @return
 	 */
-	public int getLevel() {
-		return level;
+	public String simpleToString()
+	{
+		return "BinarySearchTree " + root.simpleToString();
 	}
 	
 	//TODO: write contains/search method - BFS vs DFS?
-	
-	//TODO: finish and optimize pretty print method
-	
-	public void prettyPrint()
-	{
-		DirectedNode currentRoot = getRoot();
-		
-		
-	}
+
 	
 	/**
 	 * helper method to call deleteNode with root as param
 	 * @param nodeToRemove the node to remove 
 	 */
-	public void deleteNode(DirectedNode nodeToRemove)
+	public void deleteNode(BinaryTreeNode nodeToRemove)
 	{
 		deleteNode(root, nodeToRemove);
 	}
@@ -208,7 +239,7 @@ class BinarySearchTree
 	 * @param head the root of the tree to search, aka where the function is currently looking
 	 * @param nodeToRemove target node to remove
 	 */
-	public void deleteNode(DirectedNode head, DirectedNode nodeToRemove)
+	public void deleteNode(BinaryTreeNode head, BinaryTreeNode nodeToRemove)
 	{
 				
 		//check if the node to remove is the head
@@ -224,7 +255,7 @@ class BinarySearchTree
 	 * helper method to call the full addNode method with root as param
 	 * @param nodeToAdd
 	 */
-	public void addNode(DirectedNode nodeToAdd)
+	public void addNode(BinaryTreeNode nodeToAdd)
 	{
 		addNode(root, nodeToAdd);
 	}
@@ -234,25 +265,27 @@ class BinarySearchTree
 	 * @param head node to add to - should be ROOT node if calling this method
 	 * @param nodeToAdd the node to add
 	 */
-	public void addNode(DirectedNode head, DirectedNode nodeToAdd)
+	public void addNode(BinaryTreeNode head, BinaryTreeNode nodeToAdd)
 	{
 		if (head.compare(nodeToAdd) == -1)
 		{
-			if (getRightNode(head) == null)
+			if (head.right == null)
 				{
 					totalNodes++;
-					setRightNode(head, nodeToAdd);
+					head.right = nodeToAdd;
+					return;
 				} else {
-					addNode(getRightNode(head), nodeToAdd);
+					addNode(head.right, nodeToAdd);
 				}
 		} else if (head.compare(nodeToAdd) == 1)
 		{
-			if (getLeftNode(head) == null)
+			if (head.left == null)
 				{
 					totalNodes++;
-					setLeftNode(head, nodeToAdd);
+					head.left = nodeToAdd;
+					return;
 				} else {
-					addNode(getLeftNode(head), nodeToAdd);
+					addNode(head.left, nodeToAdd);
 				}
 		} else {
 			//if compare == 0, node is already in tree. silently ignore or print to console
@@ -263,10 +296,83 @@ class BinarySearchTree
 
 }
 
+/**
+ * treenode class for use in a binary tree
+ * @author Steve
+ *
+ */
+class BinaryTreeNode extends Node
+{
+	BinaryTreeNode left;
+	BinaryTreeNode right;
+	
+	/**
+	 * default constructor for treenode
+	 */
+	public BinaryTreeNode()
+	{
+		super();
+		
+	}
+	
+	/**
+	 * constructor with data param
+	 */
+	public BinaryTreeNode(Object data)
+	{
+		super(data);
+	}
+	
+	/*
+	 * toString method for easier visualization
+	 */
+	public String simpleToString()
+	{
+		System.out.println("Simple toString called with data " + data);
+		Object leftNodeInfo;
+		Object rightNodeInfo;
+		
+		if (this.left == null) 
+			{
+				leftNodeInfo = "null";
+			} else {
+				leftNodeInfo = left.simpleToString();
+			}
+		if (this.right == null) 
+			{
+				rightNodeInfo = "null";
+			} else {
+				rightNodeInfo = right.simpleToString();
+			}
+		return "[" + data + ",left=" + leftNodeInfo + ",right=" + rightNodeInfo + "]";
+	}
+	
+	@Override
+	public String toString()
+	{
+		String leftNodeInfo;
+		String rightNodeInfo;
+		if (this.left == null) 
+			{
+				leftNodeInfo = "null";
+			} else {
+				leftNodeInfo = left.toString();
+			}
+		if (this.right == null) 
+			{
+				rightNodeInfo = "null";
+			} else {
+				rightNodeInfo = right.toString();
+			}
+		return "TreeNode: [data=" + data.toString() + ",left=" + leftNodeInfo + ",right=" + rightNodeInfo + "]";
 
+		
+	}
+	
+}
 
 /**
- * node class for use in a directed graph or tree
+ * node class for use in a directed graph
  * @author Steve
  *
  */
@@ -281,10 +387,7 @@ class DirectedNode extends Node
 	{
 		super();
 		connectedTo = new ArrayList<DirectedNode>();
-		
-		//ensure node has two allocations for right and left connectors
-		connectedTo.add(null);
-		connectedTo.add(null);
+
 	}
 	
 	/**
@@ -296,9 +399,7 @@ class DirectedNode extends Node
 		super(data);
 		connectedTo = new ArrayList<DirectedNode>();
 		
-		//ensure node has two allocations for right and left connectors
-		connectedTo.add(null);
-		connectedTo.add(null);
+
 	}
 	
 	/**
@@ -362,7 +463,7 @@ class Node
 	public final int KEY;
 	
 
-	private Object data;
+	Object data;
 	
 	/**
 	 * default constructor, initialize key value and increment nextKey
@@ -393,7 +494,7 @@ class Node
 	}
 	
 	/**
-	 * @return the data
+	 * @return the data - also can use node.data 
 	 */
 	public Object getData() {
 		return this.data;
