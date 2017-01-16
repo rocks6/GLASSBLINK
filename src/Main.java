@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import com.mxgraph.model.mxGraphModel;
 
@@ -15,6 +16,7 @@ public class Main {
 		BinaryTreeNode dirNode3 = new BinaryTreeNode(18);
 		BinaryTreeNode dirNode4 = new BinaryTreeNode(23);
 		BinaryTreeNode dirNode5 = new BinaryTreeNode(15);
+		BinaryTreeNode dirNode6 = new BinaryTreeNode(3);
 		
 		List<BinaryTreeNode> nodes = new ArrayList<BinaryTreeNode>();
 		nodes.add(dirNode1); nodes.add(dirNode2); nodes.add(dirNode3); nodes.add(dirNode4); nodes.add(dirNode5);
@@ -24,10 +26,14 @@ public class Main {
 		bst.addNode(dirNode3);
 		bst.addNode(dirNode4);
 		bst.addNode(dirNode5);
+		
+		System.out.println(bst.contains(dirNode6));
+		
+		/*
 		System.out.println(bst.simpleToString());
 		System.out.println("Children: " + bst.getNumChildren());
 		System.out.println("Level: " + bst.getLevel());
-		/*
+
 		
 
 		System.out.println(bst.getNumChildren());
@@ -123,13 +129,11 @@ class BinarySearchTree
 	 */
 	public BinaryTreeNode getRightNode(BinaryTreeNode target)
 	{
-		try
+		if (target.right == null)
 			{
-				return target.right;
-			} catch (Exception e)
-			{
-				//right node does not exist
 				return null;
+			} else {
+				return target.right;
 			}
 		
 	}
@@ -161,14 +165,11 @@ class BinarySearchTree
 	 */
 	public BinaryTreeNode getLeftNode(BinaryTreeNode target)
 	{
-		try
+		if (target.left == null)
 			{
-				return target.left;
-			} catch (Exception e)
-			{
-				//TODO: create special 'null node' / node does not exist exception?
-				//left node does not exist
 				return null;
+			} else {
+				return target.left;
 			}
 	}
 	
@@ -222,33 +223,82 @@ class BinarySearchTree
 		return "BinarySearchTree " + root.simpleToString();
 	}
 	
-	//TODO: write contains/search method - BFS vs DFS?
-
-	
 	/**
-	 * helper method to call deleteNode with root as param
-	 * @param nodeToRemove the node to remove 
+	 * method to find if a node is in the tree
+	 * @param target node to look for
+	 * @return whether the node is in the tree
 	 */
-	public void deleteNode(BinaryTreeNode nodeToRemove)
+	public boolean contains(BinaryTreeNode target)
 	{
-		deleteNode(root, nodeToRemove);
+		Queue<BinaryTreeNode> nodes = new LinkedList<BinaryTreeNode>();
+		nodes.add(this.root);
+		
+		while (!nodes.isEmpty())
+			{
+				BinaryTreeNode curr = nodes.remove();
+				
+				if (curr.compare(target) == 0)
+					{
+						return true;
+					} else if (curr.compare(target) == -1){
+						if (curr.right != null)
+							{
+								nodes.add(curr.right);
+							}	
+					} else if (curr.compare(target) == 1){
+						if (curr.left != null)
+							{
+								nodes.add(curr.left);
+							}
+					}
+							
+								
+			}
+			return false;
 	}
 	
 	/**
-	 * full method to find and remove a node
+	 * method to find and remove a node
 	 * @param head the root of the tree to search, aka where the function is currently looking
 	 * @param nodeToRemove target node to remove
 	 */
-	public void deleteNode(BinaryTreeNode head, BinaryTreeNode nodeToRemove)
+	public void deleteNode(BinaryTreeNode target)
 	{
+		//TODO: finish delete node
+		Queue<BinaryTreeNode> nodes = new LinkedList<BinaryTreeNode>();
+		nodes.add(this.root);
+		
+		BinaryTreeNode nodeToDelete = null;
+		BinaryTreeNode nodeParent = null;
+		
+		while (!nodes.isEmpty())
+			{
+				BinaryTreeNode curr = nodes.remove();
 				
-		//check if the node to remove is the head
-		if (head.compare(nodeToRemove) == 0)
-		{
-			//TODO: logic for node deletion here
-		} else {
-			//TODO: continue searching for node, or alert user if node has no children and is not the target
-		}
+				if (curr.compare(target) == 0)
+					{
+						return true;
+					} else if (curr.compare(target) == -1){
+						if (curr.right != null)
+							{
+								nodes.add(curr.right);
+							}	
+					} else if (curr.compare(target) == 1){
+						if (curr.left != null)
+							{
+								nodes.add(curr.left);
+							}
+					}
+							
+								
+			}
+		
+		if (nodeToDelete == null)
+			{
+				System.out.println("Node with data "+ target.data + " not found in delete operation, returning");
+				return;
+			}
+		
 	}
 	
 	/**
@@ -491,6 +541,20 @@ class Node
 	@Override
 	public String toString() {
 		return "Node [KEY=" + KEY + ", data=" + data + "]";
+	}
+	
+	/**
+	 * equals method for nodes, checks data
+	 * @param targetNode node to compare to
+	 * @return true if nodes equal
+	 */
+	public boolean equals(Node targetNode)
+	{
+		if (this.data.equals(targetNode.data))
+			{
+			return true;
+			}
+		return false;
 	}
 	
 	/**
