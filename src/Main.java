@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import com.mxgraph.model.mxGraphModel;
 
 public class Main {
 
@@ -29,16 +28,6 @@ public class Main {
 		
 		System.out.println(bst.contains(dirNode6));
 		
-		/*
-		System.out.println(bst.simpleToString());
-		System.out.println("Children: " + bst.getNumChildren());
-		System.out.println("Level: " + bst.getLevel());
-
-		
-
-		System.out.println(bst.getNumChildren());
-		System.out.println((bst.getNumChildren(bst.getRoot().right)));
-		*/
 
 	}
 
@@ -265,6 +254,13 @@ class BinarySearchTree
 	public void deleteNode(BinaryTreeNode target)
 	{
 		//TODO: finish delete node
+		
+		if (!this.contains(target)) 
+			{
+				System.out.println("Delete operation failed: node '" + target.data + "'not found.");
+				return;
+			}
+		
 		Queue<BinaryTreeNode> nodes = new LinkedList<BinaryTreeNode>();
 		nodes.add(this.root);
 		
@@ -277,7 +273,7 @@ class BinarySearchTree
 				
 				if (curr.compare(target) == 0)
 					{
-						return true;
+						nodeToDelete = curr;
 					} else if (curr.compare(target) == -1){
 						if (curr.right != null)
 							{
@@ -299,6 +295,38 @@ class BinarySearchTree
 				return;
 			}
 		
+		nodeParent = getParent(nodeToDelete);
+		
+		//TODO: find if node to delete on right or left of parent
+		
+		//TODO: handle null parent (delete root of tree)
+	}
+	
+	/**
+	 * get the parent of a target node
+	 * @param target the node to find the parent of 
+	 */
+	public BinaryTreeNode getParent(BinaryTreeNode target)
+	{
+		Queue<BinaryTreeNode> nodes = new LinkedList<BinaryTreeNode>();
+		nodes.add(this.root);
+		
+		while (!nodes.isEmpty())
+			{
+				BinaryTreeNode curr = nodes.remove();
+				if (curr.equals(this.root) && curr.equals(target))
+					{
+						return null;
+					} else if (curr.right.equals(target) || curr.left.equals(target)) {
+						return curr;
+					} else if (curr.compare(target) == -1 && curr.right != null){
+						nodes.add(curr.right);
+					} else if (curr.compare(target) == 1 && curr.left != null){
+						nodes.add(curr.left);
+					}
+			}
+		
+		return null;
 	}
 	
 	/**
