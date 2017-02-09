@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Queue;
 
 
-public class Main {
+public class Infra {
 
 	public static void main(String[] args) {
 
@@ -16,6 +16,8 @@ public class Main {
 		BinaryTreeNode dirNode4 = new BinaryTreeNode(23);
 		BinaryTreeNode dirNode5 = new BinaryTreeNode(15);
 		BinaryTreeNode dirNode6 = new BinaryTreeNode(3);
+		BinaryTreeNode dirNode7 = new BinaryTreeNode(3);
+		//test chg
 		
 		List<BinaryTreeNode> nodes = new ArrayList<BinaryTreeNode>();
 		nodes.add(dirNode1); nodes.add(dirNode2); nodes.add(dirNode3); nodes.add(dirNode4); nodes.add(dirNode5);
