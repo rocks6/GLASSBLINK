@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -8,16 +9,21 @@ import java.util.Queue;
 public class Infra {
 
 	public static void main(String[] args) {
-
 		
+		
+		
+
+	}
+	
+	public void bstTest()
+	{
 		BinaryTreeNode dirNode1 = new BinaryTreeNode(9);
 		BinaryTreeNode dirNode2 = new BinaryTreeNode(5);
 		BinaryTreeNode dirNode3 = new BinaryTreeNode(18);
 		BinaryTreeNode dirNode4 = new BinaryTreeNode(23);
 		BinaryTreeNode dirNode5 = new BinaryTreeNode(15);
 		BinaryTreeNode dirNode6 = new BinaryTreeNode(3);
-		BinaryTreeNode dirNode7 = new BinaryTreeNode(3);
-		//test chg
+
 		
 		List<BinaryTreeNode> nodes = new ArrayList<BinaryTreeNode>();
 		nodes.add(dirNode1); nodes.add(dirNode2); nodes.add(dirNode3); nodes.add(dirNode4); nodes.add(dirNode5);
@@ -29,10 +35,110 @@ public class Infra {
 		bst.addNode(dirNode5);
 		
 		System.out.println(bst.contains(dirNode6));
-		
-
 	}
 
+}
+
+class WeightedDirectedGraph
+{
+	
+	private ArrayList<Node> nodes = new ArrayList<Node>();
+	private HashMap<Node[],Double> edges = new HashMap<Node[],Double>();
+	
+	/**
+	 * add a node to the graph 
+	 * @param node
+	 * @return false if node operation was unsuccessful or if node already exists in graph
+	 */
+	public boolean addNode(Node node)
+	{
+		
+		nodes.add(node);
+		return true;
+	}
+	
+	/**
+	 * add an edge to the graph, from fromnode, to tonode, with weight weight
+	 * @param fromNode
+	 * @param toNode
+	 * @param weight
+	 * @return if operation successful
+	 */
+	public boolean addEdge(Node fromNode, Node toNode, double weight)
+	{
+		
+		return true;
+	}
+	
+	/**
+	 * remove an edge to the graph, from fromnode to tonode
+	 * @param fromNode
+	 * @param toNode
+	 * @return if the node existed and was removed successfully
+	 */
+	public boolean removeEdge(Node fromNode, Node toNode)
+	{
+		
+		return true;
+	}
+	
+	/**
+	 * check if edge exists in graph from fromnode to tonode
+	 * @param fromNode
+	 * @param toNode
+	 * @return
+	 */
+	public boolean edgeExists(Node fromNode, Node toNode)
+	{
+		
+		return true;
+	}
+	
+	/**
+	 * check if node currently exists in graph
+	 * @param node
+	 * @return if node exists, ret true
+	 */
+	public boolean nodeExists(Node node)
+	{
+		
+		return true;
+	}
+	
+	/**
+	 * get the weight from one node to another 
+	 * @param fromNode
+	 * @param toNode
+	 * @return the weight
+	 */
+	public double getWeight(Node fromNode, Node toNode)
+	{
+		
+		return 0.0;
+	}
+	
+	/**
+	 * print the graph to console in as visually appealing a format as possible
+	 */
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("Nodes: ");
+		for (Node node : nodes)
+			{
+				sb.append(node.data + ",");
+			}
+		sb.deleteCharAt(sb.length()-1);
+		
+		for (Node[] edge : edges.keySet())
+			{
+				sb.append("Edge from " + edge[0] + " to " + edge[1] + " with weight " + edges.get(edge) + "\n");
+			}
+		
+		return sb.toString();
+	}
+	
 }
 
 /**
