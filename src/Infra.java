@@ -10,12 +10,40 @@ public class Infra {
 
 	public static void main(String[] args) {
 		
-		
+		wdgTest();
 		
 
 	}
 	
-	public void bstTest()
+	//test the WeightedDirectedGraph class
+	public static void wdgTest()
+	{
+		Node node1 = new Node("Node1");
+		Node node2 = new Node("Node2");
+		Node node3 = new Node("Node3");
+		Node node4 = new Node("Node4");
+		
+		WeightedDirectedGraph wdg = new WeightedDirectedGraph();
+		wdg.addNode(node1);
+		wdg.addNode(node2);
+		wdg.addNode(node3);
+		wdg.addNode(node4);
+		
+		wdg.addEdge(node1, node2, 5.0);
+		wdg.addEdge(node3, node1, 3.0);
+		
+		try {
+			wdg.editEdge(node1, node2, 7.0);
+		} catch (NonexistentEdgeException e) {
+
+			System.out.println(e.getMessage());
+		}
+		
+		System.out.println(wdg.toString());
+	}
+	
+	//test the BinarySearchTree class
+	public static void bstTest()
 	{
 		BinaryTreeNode dirNode1 = new BinaryTreeNode(9);
 		BinaryTreeNode dirNode2 = new BinaryTreeNode(5);
@@ -52,9 +80,13 @@ class WeightedDirectedGraph
 	 */
 	public boolean addNode(Node node)
 	{
-		
+		if (!nodeExists(node)) 
+		{
 		nodes.add(node);
 		return true;
+		}
+		//node exists in graph
+		return false;
 	}
 	
 	/**
@@ -66,8 +98,33 @@ class WeightedDirectedGraph
 	 */
 	public boolean addEdge(Node fromNode, Node toNode, double weight)
 	{
+		if (nodeExists(fromNode) && nodeExists(toNode) && !edgeExists(fromNode, toNode))
+		{
+			
+			Node[] edgeStruct = {fromNode, toNode}; 
+			edges.put(edgeStruct, weight);
+			return true;	
+		}
 		
-		return true;
+		//fromNode does not exist OR toNode does not exist OR edge already exists
+		return false;
+	}
+	
+	/**
+	 * edit an edge between two nodes
+	 * @param fromNode
+	 * @param toNode
+	 * @param newWeight
+	 * @throws NonexistentEdgeException
+	 */
+	public void editEdge(Node fromNode, Node toNode, double newWeight) throws NonexistentEdgeException
+	{
+		if (!edgeExists(fromNode, toNode)) { throw new NonexistentEdgeException(fromNode,toNode);}
+		
+	
+		Node[] newEdge = {fromNode, toNode};
+		removeEdge(fromNode, toNode);
+		edges.put(newEdge,newWeight);
 	}
 	
 	/**
@@ -78,8 +135,15 @@ class WeightedDirectedGraph
 	 */
 	public boolean removeEdge(Node fromNode, Node toNode)
 	{
-		
-		return true;
+		//TODO: THIS IS BROKEN AND NEEDS TO BE FIXED. DOES NOT REMOVE ITEMS FROM HASHMAP
+		if (edgeExists(fromNode, toNode))
+		{
+			Node[] keyToRem = {fromNode, toNode};
+			edges.remove(keyToRem);
+			return true;
+		}
+		//edge does not exist
+		return false;
 	}
 	
 	/**
@@ -91,7 +155,16 @@ class WeightedDirectedGraph
 	public boolean edgeExists(Node fromNode, Node toNode)
 	{
 		
-		return true;
+		//CANNOT USE HashMap.containsKey(), need to improvise
+		Node[] arrToCheck = {fromNode,toNode};
+		for (Node[] edge : edges.keySet())
+		{
+			if (arrToCheck[0].equals(edge[0]) && arrToCheck[1].equals(edge[1]))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -101,8 +174,11 @@ class WeightedDirectedGraph
 	 */
 	public boolean nodeExists(Node node)
 	{
-		
+		if (nodes.contains(node))
+		{
 		return true;
+		} 
+		return false;
 	}
 	
 	/**
@@ -110,11 +186,19 @@ class WeightedDirectedGraph
 	 * @param fromNode
 	 * @param toNode
 	 * @return the weight
+	 * @throws NonexistentEdgeException 
 	 */
-	public double getWeight(Node fromNode, Node toNode)
+	public double getWeight(Node fromNode, Node toNode) throws NonexistentEdgeException
 	{
-		
-		return 0.0;
+		if (edgeExists(fromNode,toNode))
+		{
+			Node[] craftedEdge = {fromNode, toNode};	
+			return edges.get(craftedEdge);
+
+		} else {
+			throw new NonexistentEdgeException(fromNode, toNode);
+		}
+
 	}
 	
 	/**
@@ -131,6 +215,8 @@ class WeightedDirectedGraph
 			}
 		sb.deleteCharAt(sb.length()-1);
 		
+		sb.append("\n");
+		sb.append("Edges: ");
 		for (Node[] edge : edges.keySet())
 			{
 				sb.append("Edge from " + edge[0] + " to " + edge[1] + " with weight " + edges.get(edge) + "\n");
@@ -139,6 +225,15 @@ class WeightedDirectedGraph
 		return sb.toString();
 	}
 	
+}
+
+//thrown if edge does not exist between two requested nodes
+class NonexistentEdgeException extends Exception
+{
+	public NonexistentEdgeException(Node fromNode, Node toNode)
+	{
+		super("NonexistentEdgeException: No edge between  " + fromNode.toString() + " and " + toNode.toString());
+	}
 }
 
 /**
