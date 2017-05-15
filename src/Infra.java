@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 
@@ -24,10 +25,7 @@ public class Infra {
 		Node node4 = new Node("Node4");
 		
 		WeightedDirectedGraph wdg = new WeightedDirectedGraph();
-		wdg.addNode(node1);
-		wdg.addNode(node2);
-		wdg.addNode(node3);
-		wdg.addNode(node4);
+		wdg.addNode(node1,node2,node3,node4);
 		
 		wdg.addEdge(node1, node2, 5.0);
 		wdg.addEdge(node3, node1, 3.0);
@@ -35,7 +33,6 @@ public class Infra {
 		try {
 			wdg.editEdge(node1, node2, 7.0);
 		} catch (NonexistentEdgeException e) {
-
 			System.out.println(e.getMessage());
 		}
 		
@@ -71,7 +68,7 @@ class WeightedDirectedGraph
 {
 	
 	private ArrayList<Node> nodes = new ArrayList<Node>();
-	private HashMap<Node[],Double> edges = new HashMap<Node[],Double>();
+	private HashMap<DirEdge,Double> edges = new HashMap<DirEdge,Double>();
 	
 	/**
 	 * add a node to the graph 
@@ -90,6 +87,18 @@ class WeightedDirectedGraph
 	}
 	
 	/**
+	 * addNode method for multiple nodes
+	 * @param nodes list of nodes to add
+	 */
+	public void addNode(Node... nodes)
+	{
+		for (Node node : nodes)
+		{
+			addNode(node);
+		}
+	}
+	
+	/**
 	 * add an edge to the graph, from fromnode, to tonode, with weight weight
 	 * @param fromNode
 	 * @param toNode
@@ -101,8 +110,8 @@ class WeightedDirectedGraph
 		if (nodeExists(fromNode) && nodeExists(toNode) && !edgeExists(fromNode, toNode))
 		{
 			
-			Node[] edgeStruct = {fromNode, toNode}; 
-			edges.put(edgeStruct, weight);
+			DirEdge edgeToAdd = new DirEdge(fromNode, toNode);
+			edges.put(edgeToAdd, weight);
 			return true;	
 		}
 		
@@ -122,7 +131,7 @@ class WeightedDirectedGraph
 		if (!edgeExists(fromNode, toNode)) { throw new NonexistentEdgeException(fromNode,toNode);}
 		
 	
-		Node[] newEdge = {fromNode, toNode};
+		DirEdge newEdge = new DirEdge(fromNode, toNode);
 		removeEdge(fromNode, toNode);
 		edges.put(newEdge,newWeight);
 	}
@@ -138,8 +147,8 @@ class WeightedDirectedGraph
 		//TODO: THIS IS BROKEN AND NEEDS TO BE FIXED. DOES NOT REMOVE ITEMS FROM HASHMAP
 		if (edgeExists(fromNode, toNode))
 		{
-			Node[] keyToRem = {fromNode, toNode};
-			edges.remove(keyToRem);
+			DirEdge edgeToRemove = new DirEdge(fromNode, toNode);
+			edges.remove(edgeToRemove);
 			return true;
 		}
 		//edge does not exist
@@ -155,11 +164,11 @@ class WeightedDirectedGraph
 	public boolean edgeExists(Node fromNode, Node toNode)
 	{
 		
-		//CANNOT USE HashMap.containsKey(), need to improvise
-		Node[] arrToCheck = {fromNode,toNode};
-		for (Node[] edge : edges.keySet())
+		
+		DirEdge edgeToCheck = new DirEdge(fromNode, toNode);
+		for (DirEdge edge : edges.keySet())
 		{
-			if (arrToCheck[0].equals(edge[0]) && arrToCheck[1].equals(edge[1]))
+			if (edgeToCheck.equals(edge))
 			{
 				return true;
 			}
@@ -217,14 +226,52 @@ class WeightedDirectedGraph
 		
 		sb.append("\n");
 		sb.append("Edges: ");
-		for (Node[] edge : edges.keySet())
+		for (DirEdge edge : edges.keySet())
 			{
-				sb.append("Edge from " + edge[0] + " to " + edge[1] + " with weight " + edges.get(edge) + "\n");
+				sb.append("Edge from " + edge.fromNode + " to " + edge.toNode + " with weight " + edges.get(edge) + "\n");
 			}
 		
 		return sb.toString();
 	}
 	
+}
+
+/**
+ * class to represent an Edge object between two nodes (directed)
+ * @author Steve
+ *
+ */
+class DirEdge 
+{
+	
+	public Node fromNode;
+	public Node toNode;
+	
+	public DirEdge(Node fromNode, Node toNode)
+	{
+		this.fromNode = fromNode;
+		this.toNode = toNode;
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		if (other == this)
+		{
+			return true; 
+		}
+		if (!(other instanceof DirEdge))
+		{
+			return false;
+		}
+		return this.fromNode.equals(((DirEdge)other).fromNode) && this.toNode.equals(((DirEdge)other).toNode);
+	}
+	
+	@Override
+	public int hashCode() 
+	{
+		return Objects.hash(fromNode,toNode);
+	}
 }
 
 //thrown if edge does not exist between two requested nodes
@@ -699,7 +746,7 @@ class DirectedNode extends Node
 	 */
 	@Override
 	public String toString() {
-		return "Node [KEY=" + KEY + ", data=" + super.getData() + ", connectedTo={\n"+ connectedTo +"\n}]";
+		return "Node [data=" + super.getData() + ", connectedTo={\n"+ connectedTo +"\n}]";
 	}
 
 	/**
@@ -740,9 +787,7 @@ class DirectedNode extends Node
  */
 class Node
 {
-	private static int nextKey = 0;
-	public final int KEY;
-	
+
 
 	Object data;
 	
@@ -751,8 +796,7 @@ class Node
 	 */
 	public Node()
 	{
-		KEY = nextKey;
-		nextKey++;
+		this.data = null;
 	}
 
 	/**
@@ -761,8 +805,6 @@ class Node
 	 */
 	public Node(Object data)
 	{
-		KEY = nextKey;
-		nextKey++;
 		this.data = data;
 	}
 	
@@ -771,7 +813,7 @@ class Node
 	 */
 	@Override
 	public String toString() {
-		return "Node [KEY=" + KEY + ", data=" + data + "]";
+		return "Node [data=" + data + "]";
 	}
 	
 	/**
@@ -781,7 +823,7 @@ class Node
 	 */
 	public boolean equals(Node targetNode)
 	{
-		if (this.data.equals(targetNode.data))
+		if (this.data.getClass() == (targetNode.data.getClass()) && this.data.equals(targetNode.data))
 			{
 			return true;
 			}

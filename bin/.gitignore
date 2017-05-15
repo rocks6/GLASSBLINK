@@ -3,6 +3,7 @@
 /DirectedNode.class
 /Infra.class
 /Node.class
-/WeightedDirectedGraph.class
-/FormatHelper.class
 /NonexistentEdgeException.class
+/WeightedDirectedGraph.class
+/Edge.class
+/DirEdge.class
