@@ -11,9 +11,14 @@ public class Infra {
 
 	public static void main(String[] args) {
 		
-		wdgTest();
+		ProbabilityLab.percentageTest();
 		
 
+	}
+	
+	public static void markovProfileTest()
+	{
+		
 	}
 	
 	//test the WeightedDirectedGraph class
@@ -64,6 +69,12 @@ public class Infra {
 
 }
 
+
+/**
+ * weighted directed graph data structure represented using a HashMap and a directed Edge wrapper object
+ * @author Steve
+ *
+ */
 class WeightedDirectedGraph
 {
 	
